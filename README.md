@@ -28,9 +28,9 @@ Some libraries and apps for that:
 
 - Ruby: [Puma](https://github.com/puma/puma/blob/master/docs/systemd.md#socket-activation)
 - Node.js: [socket-activation](https://github.com/sorccu/node-socket-activation) (note: needs a socket name. obviously, it is `soad`)
-- Go: [go-systemd/activation](https://github.com/coreos/go-systemd/tree/master/activation)
+- Go: [go-systemd/activation](https://github.com/coreos/go-systemd/tree/master/activation) or [systemd.go](https://github.com/lemenkov/systemd.go); [+ manners](https://github.com/braintree/manners) for graceful shutdown, see [example](https://github.com/myfreeweb/classyclock/blob/328ab8378c19455a7eaaee7fafef7c5eb28f8526/web-app.go#L32-L62)
 - Rust: [systemd_socket](https://github.com/viraptor/systemd_socket)
-- Haskell: [socket-activation](https://github.com/ddfisher/haskell-socket-activation)
+- Haskell: [socket-activation](https://github.com/ddfisher/haskell-socket-activation) ([+ Warp graceful shutdown example](https://github.com/myfreeweb/sweetroll/blob/c48a29b3b4f2b666c479df45908fbd22b05da88f/executable/Main.hs#L78-L96))
 
 (You can implement your own in 5 minutes, all you need to do is create a socket object from a file descriptor. See `test_server.rb` for a tiny example.)
 
