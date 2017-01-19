@@ -19,14 +19,13 @@ And put `soad` where you keep your binaries.
 
 ## Usage
 
-NOTE: For scripting languages, consider using tools such as [uWSGI with its "on demand vassals" feature](http://uwsgi-docs.readthedocs.io/en/latest/OnDemandVassals.html) instead of `soad`.
-
 First, your web server needs to support socket activation (using the protocol from systemd — $LISTEN_PID, $LISTEN_FDS, $LISTEN_FDNAMES).
 It also needs to shut down gracefully on `SIGTERM`.
 
 Some libraries and apps for that:
 
-- Ruby: [Puma](https://github.com/puma/puma/blob/master/docs/systemd.md#socket-activation)
+- Ruby: [Puma](https://github.com/puma/puma/blob/master/docs/systemd.md#socket-activation) (see examples below. tl;dr needs the same socket path specified, it literally checks the path)
+- Python: [uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html) (see examples below. tl;dr needs an obscure option to shut down gracefully on SIGTERM. it can also [do this sort of thing on its own](http://uwsgi-docs.readthedocs.io/en/latest/OnDemandVassals.html), but in a more complex and memory consuming way)
 - Node.js: [socket-activation](https://github.com/sorccu/node-socket-activation) (note: needs a socket name. obviously, it is `soad`)
 - Go: [go-systemd/activation](https://github.com/coreos/go-systemd/tree/master/activation) or [systemd.go](https://github.com/lemenkov/systemd.go); [+ manners](https://github.com/braintree/manners) for graceful shutdown, see [example](https://github.com/myfreeweb/classyclock/blob/328ab8378c19455a7eaaee7fafef7c5eb28f8526/web-app.go#L32-L62)
 - Rust: [systemd_socket](https://github.com/viraptor/systemd_socket)
@@ -38,6 +37,7 @@ Now, to run your app on a UNIX domain socket, something like this:
 
 ```bash
 $ soad -s /var/run/myapp.sock -t 240 -- puma -b unix:/var/run/myapp.sock
+$ soad -s /var/run/pyapp.sock -t 240 -- uwsgi --master --hook-master-start "unix_signal:15 gracefully_kill_them_all" --wsgi-file app.py --callable app --lazy-apps
 ```
 
 The `-t`/`--time-until-stop` argument is the number of seconds the app will be allowed to run without any activity.
