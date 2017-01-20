@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,6 +35,7 @@ static const char *progname;
 static char *socket_path = "./socket";
 static int poll_interval = 5; // seconds
 static int inactivity_interval = 60; // seconds
+static int shutdown_signal = SIGTERM;
 static int socket_fd = -1;
 static pid_t child_pid = -1;
 static struct timespec last_activity;
@@ -64,13 +66,13 @@ void *killer(void* _) {
 			die("clock_gettime: %s\n", strerror(errno));
 		}
 		if (child_pid > 0 && difftime(cur_time.tv_sec, last_activity.tv_sec) >= inactivity_interval) {
-			kill(child_pid, SIGTERM);
+			kill(child_pid, shutdown_signal);
 		}
 	}
 }
 
 void usage() {
-	printf("Usage: %s [-s <socket>] [-t <time-until-stop (seconds)>] command arg1 arg2 ...\n", progname);
+	printf("Usage: %s [-s <socket>] [-t <time-until-stop (seconds)>] [-S <shutdown-signal (e.g. 1 for HUP, 2 for INT, ...)>] command arg1 arg2 ...\n", progname);
 	exit(1);
 }
 
@@ -80,12 +82,14 @@ int main(int argc, char **argv) {
 	static struct option longopts[] = {
 		{ "socket",          required_argument,      NULL,           's' },
 		{ "time-until-stop", required_argument,      NULL,           't' },
+		{ "shutdown-signal", required_argument,      NULL,           'S' },
 		{ NULL,              0,                      NULL,           0 }
 	};
-	while ((c = getopt_long(argc, argv, "s:t:?h", longopts, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "s:t:S:?h", longopts, NULL)) != -1) {
 		switch (c) {
 			case 's': socket_path         = optarg; break;
 			case 't': inactivity_interval = strtol(optarg, NULL, 10); break;
+			case 'S': shutdown_signal     = strtol(optarg, NULL, 10); break;
 			case '?':
 			case 'h':
 			default:  usage(); break;

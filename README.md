@@ -21,7 +21,8 @@ And put `soad` where you keep your binaries.
 
 First, your web server needs to support socket activation.
 Either by explicitly specifying a file descriptor via something like an `fd://3` argument, or by using the tiny metadata protocol from systemd — the `LISTEN_PID`, `LISTEN_FDS` and `LISTEN_FDNAMES` environment variables.
-It also needs to shut down gracefully on `SIGTERM`.
+
+It also needs to shut down gracefully on a signal (`SIGTERM` is sent by default, customize by passing the signal *number* as `-S`/`--shutdown-signal`).
 
 Some libraries and apps for that:
 
