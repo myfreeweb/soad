@@ -26,7 +26,7 @@ It also needs to shut down gracefully on a signal (`SIGTERM` is sent by default,
 
 Some libraries and apps for that:
 
-- Ruby: [Puma](https://github.com/puma/puma/blob/master/docs/systemd.md#socket-activation) (see examples below. tl;dr needs the same socket path specified, it literally checks the path)
+- Ruby: [Puma](https://github.com/puma/puma/blob/master/docs/systemd.md#socket-activation) (see examples below. tl;dr needs the same socket path specified, it literally checks the path. also bundler exec needs `--keep-file-descriptors`!!!)
 - Python: [gunicorn](http://docs.gunicorn.org/en/stable/deploy.html?highlight=activation#systemd)
 - Python/Lua/Perl/Ruby/etc.: [uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html) (see examples below. tl;dr needs an obscure option to shut down gracefully on SIGTERM. it can also [do this sort of thing on its own](http://uwsgi-docs.readthedocs.io/en/latest/OnDemandVassals.html), but in a more complex and memory consuming way)
 - Node.js: [socket-activation](https://github.com/sorccu/node-socket-activation) (note: needs a socket name. obviously, it is `soad`)
@@ -39,7 +39,7 @@ Some libraries and apps for that:
 Now, to run your app on a UNIX domain socket, something like this:
 
 ```bash
-$ soad -s /var/run/myapp.sock -t 240 -- puma -b unix:/var/run/myapp.sock
+$ soad -s /var/run/myapp.sock -t 240 -- bundle exec --keep-file-descriptors puma -b unix:/var/run/myapp.sock
 $ soad -s /var/run/myapp.sock -t 240 -- gunicorn app:app
 $ soad -s /var/run/pyapp.sock -t 240 -- uwsgi --master --hook-master-start "unix_signal:15 gracefully_kill_them_all" --wsgi-file app.py --callable app --lazy-apps
 ```
