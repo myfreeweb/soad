@@ -12,7 +12,7 @@ But what I want to do is to [run many rarely used services on a VPS with low RAM
 Should work on any modern UNIX-like system.
 
 ```bash
-$ cc -lpthread -o soad soad.c
+$ cc -O2 -fPIE -pie -fstack-protector-all -lpthread -o soad soad.c
 ```
 
 And put `soad` where you keep your binaries.
@@ -53,7 +53,17 @@ Point your reverse proxy to that socket and enjoy.
 
 Please feel free to submit pull requests!
 
-By participating in this project you agree to follow the [Contributor Code of Conduct](http://contributor-covenant.org/version/1/4/).
+By participating in this project you agree to follow the [Contributor Code of Conduct](http://contributor-covenant.org/version/1/4/) and to release your contributions under the Unlicense.
+
+[The list of contributors is available on GitHub](https://github.com/myfreeweb/soad/graphs/contributors).
+
+Please run clang static analysis when testing your changes, something like that:
+
+```bash
+$ scan-build40 cc -Weverything -Wthread-safety -fsanitize=address -lpthread -o soad soad.c
+```
+
+And use clang-format to format the code.
 
 ## License
 

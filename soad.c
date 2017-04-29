@@ -35,16 +35,16 @@
 #error "No POSIX clock?!"
 #endif
 
-static const char *progname;
+static const char *progname = "soad";
 static char *socket_path = "./socket";
-static int poll_interval = 5;         // seconds
-static int inactivity_interval = 60;  // seconds
+static unsigned int poll_interval = 5;  // seconds
+static int inactivity_interval = 60;    // seconds
 static int shutdown_signal = SIGTERM;
 static int socket_fd = -1;
 static pid_t child_pid = -1;
-static struct timespec last_activity;
+static struct timespec last_activity = {0, 0};
 
-void *activity_monitor(void *_) {
+static void *activity_monitor(__attribute__((unused)) void *_) {
 	fd_set fds;
 	FD_ZERO(&fds);
 	FD_SET(socket_fd, &fds);
@@ -62,7 +62,7 @@ void *activity_monitor(void *_) {
 	}
 }
 
-void *killer(void *_) {
+static void *killer(__attribute__((unused)) void *_) {
 	struct timespec cur_time;
 	for (;;) {
 		sleep(poll_interval);
@@ -75,7 +75,7 @@ void *killer(void *_) {
 	}
 }
 
-void usage() {
+static __attribute__((__noreturn__)) void usage() {
 	printf(
 	    "Usage: %s [-s <socket>] [-t <time-until-stop (seconds)>] "
 	    "[-S <shutdown-signal (e.g. 1 for HUP, 2 for INT, ...)>] command arg1 arg2 ...\n",
@@ -96,16 +96,15 @@ int main(int argc, char **argv) {
 				socket_path = optarg;
 				break;
 			case 't':
-				inactivity_interval = strtol(optarg, NULL, 10);
+				inactivity_interval = (int)strtol(optarg, NULL, 10);
 				break;
 			case 'S':
-				shutdown_signal = strtol(optarg, NULL, 10);
+				shutdown_signal = (int)strtol(optarg, NULL, 10);
 				break;
 			case '?':
 			case 'h':
 			default:
 				usage();
-				break;
 		}
 	}
 	argc -= optind;
