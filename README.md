@@ -31,7 +31,7 @@ Some libraries and apps for that:
 - Python/Lua/Perl/Ruby/etc.: [uWSGI](http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html) (see examples below. tl;dr needs an obscure option to shut down gracefully on SIGTERM. it can also [do this sort of thing on its own](http://uwsgi-docs.readthedocs.io/en/latest/OnDemandVassals.html), but in a more complex and memory consuming way)
 - Node.js: [socket-activation](https://github.com/sorccu/node-socket-activation) (note: needs a socket name. obviously, it is `soad`)
 - Go: [go-systemd/activation](https://github.com/coreos/go-systemd/tree/master/activation) or [systemd.go](https://github.com/lemenkov/systemd.go); [+ manners](https://github.com/braintree/manners) for graceful shutdown, see [example](https://github.com/myfreeweb/classyclock/blob/328ab8378c19455a7eaaee7fafef7c5eb28f8526/web-app.go#L32-L62)
-- Rust: [systemd_socket](https://github.com/viraptor/systemd_socket)
+- Rust: [listenfd](https://github.com/mitsuhiko/rust-listenfd)
 - Haskell: [socket-activation](https://github.com/ddfisher/haskell-socket-activation), [wai-cli](https://github.com/myfreeweb/wai-cli) (based on socket-activation, has graceful shutdown)
 
 (You can implement your own in 5 minutes, all you need to do is create a socket object from a file descriptor. See `test_server.rb` for a tiny example.)
@@ -53,14 +53,14 @@ Point your reverse proxy to that socket and enjoy.
 
 Please feel free to submit pull requests!
 
-By participating in this project you agree to follow the [Contributor Code of Conduct](http://contributor-covenant.org/version/1/4/) and to release your contributions under the Unlicense.
+By participating in this project you agree to follow the [Contributor Code of Conduct](https://contributor-covenant.org/version/1/4/) and to release your contributions under the Unlicense.
 
 [The list of contributors is available on GitHub](https://github.com/myfreeweb/soad/graphs/contributors).
 
 Please run clang static analysis when testing your changes, something like that:
 
 ```bash
-$ scan-build40 cc -Weverything -Wthread-safety -fsanitize=address -lpthread -o soad soad.c
+$ scan-build60 cc -Weverything -Wthread-safety -fsanitize=address -lpthread -o soad soad.c
 ```
 
 And use clang-format to format the code.
